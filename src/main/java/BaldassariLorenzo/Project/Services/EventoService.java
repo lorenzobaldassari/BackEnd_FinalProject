@@ -28,6 +28,7 @@ public class EventoService {
         evento.setTitolo(body.Titolo());
         evento.setDescrizione(body.descrizione());
         evento.setData(body.data());
+        evento.setLuogo(body.luogo());
         evento.setNumero_di_posti_disponibili(body.numero_di_posti_disponibili());
         evento.setUrlImmagineDiProfilo(body.urlImmagineDiProfilo());
         eventoDao.save(evento);

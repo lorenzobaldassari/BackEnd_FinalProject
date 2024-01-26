@@ -1,7 +1,6 @@
 package BaldassariLorenzo.Project.Services;
 
 import BaldassariLorenzo.Project.Dao.UtenteDao;
-import BaldassariLorenzo.Project.Entities.Role;
 import BaldassariLorenzo.Project.Entities.Utente;
 import BaldassariLorenzo.Project.Exceptions.ItemNotFoundException;
 import BaldassariLorenzo.Project.Payloads.UtentePayloads.UtenteRequestDto;
@@ -27,7 +26,7 @@ public class UtenteService {
         utente.setEmail(body.email());
         utente.setPassword(body.password());
         utente.setUsername(body.username());
-        utente.setRole(Role.UTENTE_SEMPLICE);
+        utente.setRole("UTENTE_SEMPLICE");
         utenteDao.save(utente);
         return  new UtenteRespondDto(utente.getUuid(), utente.getUsername());
     }
@@ -55,8 +54,12 @@ public class UtenteService {
         utente.setEmail(body.email());
         utente.setPassword(body.password());
         utente.setUsername(body.username());
-        utente.setRole(Role.UTENTE_SEMPLICE);
+        utente.setRole("UTENTE_SEMPLICE");
         utenteDao.save(utente);
         return  new UtenteRespondDto(utente.getUuid(), utente.getUsername());
+    }
+
+    public Utente findByEmail(String email){
+        return utenteDao.findByEmail(email).orElseThrow(()->new ItemNotFoundException(email));
     }
 }

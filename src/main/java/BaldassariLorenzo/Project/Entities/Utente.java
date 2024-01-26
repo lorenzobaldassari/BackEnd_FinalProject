@@ -1,10 +1,12 @@
 package BaldassariLorenzo.Project.Entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
@@ -26,46 +28,37 @@ public class Utente implements UserDetails {
     private String username;
     private String email;
     private String password;
-    @Enumerated(EnumType.STRING)
-    private Role role;
-
+    private String role;
+    @JsonIgnore
     @OneToMany(mappedBy = "utente")
     private List<Prenotazione> listaDiPrenotazioni;
 
 
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
-    }
 
-    @Override
-    public String getPassword() {
-        return null;
-    }
-
-    @Override
-    public String getUsername() {
-        return null;
+        return List.of(new SimpleGrantedAuthority(this.role));
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return false;
+        return true;
     }
 
     @Override

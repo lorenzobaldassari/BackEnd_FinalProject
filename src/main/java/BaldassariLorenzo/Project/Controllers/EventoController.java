@@ -43,7 +43,7 @@ public class EventoController {
         return eventoService.findById(id);
     }
 
-    @PutMapping("{id}")
+    @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('ORGANIZZATORE')")
     @ResponseStatus(HttpStatus.OK)
     public EventoRespondDto modify(@RequestBody @Validated EventoRequestDto body,

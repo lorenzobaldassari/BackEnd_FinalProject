@@ -1,9 +1,9 @@
 package BaldassariLorenzo.Project.Security;
 
+import BaldassariLorenzo.Project.Entities.Utente;
 import BaldassariLorenzo.Project.Exceptions.UnauthorizedException;
-import LorenzoBaldassari.Week6_Project.Entities.Utente;
-import LorenzoBaldassari.Week6_Project.Exceptions.UnauthorizedException;
-import LorenzoBaldassari.Week6_Project.Services.UtenteService;
+
+import BaldassariLorenzo.Project.Services.UtenteService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,19 +29,18 @@ public class JWTAAutfilther extends OncePerRequestFilter {
     @Override
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException , IOException {
-            String checkRequestToken=request.getHeader("Authorization");  //baere mkafkamzmSmqm2341324qkmksamwm;22
+            String checkRequestToken=request.getHeader("Authorization");
         if(checkRequestToken==null){
             throw  new UnauthorizedException("token non presente");
         }else{
-            String accessToken= checkRequestToken.substring(7);//servhe per fare lo slice del token e togliere
-//            //la parola baerer ed avere il token pulito
-            jwtTools.verifyToken(accessToken);  //verifichiamo il token
+            String accessToken= checkRequestToken.substring(7);
+            jwtTools.verifyToken(accessToken);
 
-            // 3.2 Informo Spring Security che l'utente è autenticato (se non faccio questo passaggio continuerò ad avere 403 come risposte)
+
             String id = jwtTools.extractIdFromToken(accessToken);
             Utente utente= utenteService.findById(UUID.fromString(id));
 
-            // OBBLIGATORIO aggiungere l'elenco ruoli se si vuole "attivare" il meccanismo di Autorizzazione
+
             Authentication authentication= new UsernamePasswordAuthenticationToken(utente,null,utente.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
