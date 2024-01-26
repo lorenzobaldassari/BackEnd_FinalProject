@@ -1,10 +1,15 @@
 package BaldassariLorenzo.Project.Services;
 
+import BaldassariLorenzo.Project.Dao.UtenteDao;
 import BaldassariLorenzo.Project.Entities.Utente;
+import BaldassariLorenzo.Project.Exceptions.UnauthorizedException;
 import BaldassariLorenzo.Project.Payloads.AuthPayloads.AuthRequestDTO;
+import BaldassariLorenzo.Project.Payloads.UtentePayloads.UtenteRequestDto;
+import BaldassariLorenzo.Project.Payloads.UtentePayloads.UtenteRespondDto;
 import BaldassariLorenzo.Project.Security.JWTTtools;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,10 +19,28 @@ public class AuthService {
 
     @Autowired
     private JWTTtools jwtTtools;
+    @Autowired
+    private UtenteDao utenteDao;
+
+    @Autowired
+    private PasswordEncoder bcrypt;
 
     public String authenticateUser(AuthRequestDTO body){
         Utente utente=  utenteService.findByEmail(body.email());
-        return jwtTtools.createToken(utente);
+        if (bcrypt.matches(body.password(), utente.getPassword())) {
+            return jwtTtools.createToken(utente);
+        } else {
+            throw new UnauthorizedException("Credenziali non valide!");
+        }
 
+    }
+    public UtenteRespondDto post(UtenteRequestDto body){
+        Utente utente= new Utente();
+        utente.setEmail(body.email());
+        utente.setPassword(bcrypt.encode(body.password()));
+        utente.setUsername((body.username()));
+        utente.setRole("UTENTE_SEMPLICE");
+        utenteDao.save(utente);
+        return  new UtenteRespondDto(utente.getUuid(), utente.getUsername());
     }
 }

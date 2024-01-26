@@ -32,17 +32,13 @@ public class AuthController {
             throw new BadRequestException("errore nel invio del payload per il metodo POST"+bindingResult.getAllErrors());
         } else {
 
-            return utenteService.post(body);
+            return authService.post(body);
         }
     }
     @PostMapping("/login")
     public String getToken(@RequestBody AuthRequestDTO body){
-        Utente utente= utenteService.findByEmail(body.email());
-        if(utente.getPassword().equals(body.password())){
         String accessToken= authService.authenticateUser(body);
         return accessToken;
-        }else {
-            throw  new UnauthorizedException("autorizzazione fallita");
-        }
+
     }
 }

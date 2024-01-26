@@ -6,9 +6,13 @@ import BaldassariLorenzo.Project.Entities.Evento;
 import BaldassariLorenzo.Project.Exceptions.ItemNotFoundException;
 import BaldassariLorenzo.Project.Payloads.EventoPayloads.EventoRequestDto;
 import BaldassariLorenzo.Project.Payloads.EventoPayloads.EventoRespondDto;
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,6 +20,8 @@ import java.util.UUID;
 public class EventoService {
 
 
+    @Autowired
+    private Cloudinary cloudinaryUploader;
     @Autowired
     private EventoDao eventoDao;
 
@@ -30,7 +36,7 @@ public class EventoService {
         evento.setData(body.data());
         evento.setLuogo(body.luogo());
         evento.setNumero_di_posti_disponibili(body.numero_di_posti_disponibili());
-        evento.setUrlImmagineDiProfilo(body.urlImmagineDiProfilo());
+        evento.setUrlImmagineDiProfilo("http://res.cloudinary.com/dxmrdw4i7/image/upload/v1706279019/sygywe7saavy6g2ffobt.png");
         eventoDao.save(evento);
         return new EventoRespondDto(evento.getUuid(),evento.getTitolo());
     }
@@ -52,5 +58,12 @@ public class EventoService {
         evento.setUrlImmagineDiProfilo(body.urlImmagineDiProfilo());
         eventoDao.save(evento);
         return new EventoRespondDto(evento.getUuid(),evento.getTitolo());
+    }
+
+    public String uploadPicture(MultipartFile file) throws IOException {
+        String url= (String) cloudinaryUploader.uploader()
+                .upload(file.getBytes(), ObjectUtils.emptyMap())
+                .get("url");
+        return url;
     }
 }

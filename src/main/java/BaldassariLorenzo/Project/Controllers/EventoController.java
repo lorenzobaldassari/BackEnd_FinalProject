@@ -1,5 +1,6 @@
 package BaldassariLorenzo.Project.Controllers;
 
+import BaldassariLorenzo.Project.Dao.EventoDao;
 import BaldassariLorenzo.Project.Entities.Evento;
 import BaldassariLorenzo.Project.Exceptions.BadRequestException;
 import BaldassariLorenzo.Project.Payloads.EventoPayloads.EventoRequestDto;
@@ -11,7 +12,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
@@ -19,7 +22,9 @@ import java.util.UUID;
 @RequestMapping("/eventi")
 public class EventoController {
     @Autowired
-    EventoService eventoService;
+    private EventoService eventoService;
+    @Autowired
+    private EventoDao eventoDao;
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
@@ -63,4 +68,18 @@ public class EventoController {
         eventoService.delete(id);
     }
 
+
+    @PutMapping("/{id}/upload")
+    @PreAuthorize("hasAuthority('ORGANIZZATORE')")
+    public String uploadEventImage(@RequestParam("eventImage") MultipartFile file, @PathVariable UUID id) throws IOException {
+        String url = eventoService.uploadPicture(file);
+        Evento evento = eventoService.findById(id);
+        evento.setTitolo(evento.getTitolo());
+        evento.setDescrizione(evento.getDescrizione());
+        evento.setData(evento.getData());
+        evento.setNumero_di_posti_disponibili(evento.getNumero_di_posti_disponibili());
+        evento.setUrlImmagineDiProfilo(url);
+        eventoDao.save(evento);
+        return "ok immagine salvata " + url;
+    }
 }
