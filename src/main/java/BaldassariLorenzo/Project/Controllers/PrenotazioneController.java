@@ -29,7 +29,7 @@ public class PrenotazioneController {
 //        return currentUser;
 //    }//   fare query fitlro per id!
 
-    @PostMapping("/me/{uuid}")
+    @PostMapping("/me")
     public PrenotazioneRespondDto prenotazioneForMySelf(@AuthenticationPrincipal Utente currentUser,@RequestParam UUID uuid) {
         System.err.println(currentUser.getUuid());
         return prenotazioneService.post(UUID.fromString("7e1dbde9-5307-4e2c-8e2e-f849a3adcae7"),currentUser.getUuid());
